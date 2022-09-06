@@ -22,14 +22,14 @@ userRouter.post('/signup', (req, res, next) => {
             })
             .catch((err) => {
                 res.status(500).json({
-                    error: err,
+                    message: 'Invalid Credentials!',
                 });
             });
     });
 });
 
 userRouter.post('/login', (req, res, next) => {
-    // Check user exists with email
+    let fetchedUser;
     User.findOne({email: req.body.email})
         .then((user) => {
             if (!user) {
@@ -37,7 +37,7 @@ userRouter.post('/login', (req, res, next) => {
                     message: 'Auth failed',
                 });
             }
-            // Check password is legit
+            fetchedUser = user;
             return bcrypt.compare(req.body.password, user.password);
         })
         .then((result) => {
@@ -48,25 +48,23 @@ userRouter.post('/login', (req, res, next) => {
             }
             const token = jwt.sign(
                 {
-                    email: user.email,
-                    userId: user._id,
+                    email: fetchedUser.email,
+                    userId: fetchedUser._id,
                 },
                 process.env.JWT_SECRET,
-                {
-                    expiresIn: '1h',
-                }
+                {expiresIn: '1h'}
             );
             res.status(200).json({
                 token: token,
                 expiresIn: 3600,
+                userId: fetchedUser._id,
             });
         })
         .catch((err) => {
             return res.status(401).json({
-                message: 'Auth failed',
+                message: 'Invalid Credentials!',
             });
         });
-    // hello
 });
 
 module.exports = userRouter;

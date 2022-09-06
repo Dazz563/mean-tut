@@ -12,6 +12,7 @@ import {Post, PostsService} from '../services/posts.service';
 export class PostListComponent implements OnInit, OnDestroy {
     private authStatusSub: Subscription;
     public userIsAuthenticated = false;
+    userId: string;
 
     posts: Post[] = [];
     private postsSub!: Subscription;
@@ -31,6 +32,7 @@ export class PostListComponent implements OnInit, OnDestroy {
         // Loader start
         this.isLoading = true;
         this.postService.getPosts(this.postsPerPage, this.currentPage);
+        this.userId = this.authService.getUserId();
         this.postsSub = this.postService.getPostUpdateListener().subscribe((postData: {posts: Post[]; postCount: number}) => {
             this.posts = postData.posts;
             this.totalPosts = postData.postCount;
@@ -40,6 +42,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
         this.authStatusSub = this.authService.getAuthStatusListener().subscribe((isAuthenticated) => {
             this.userIsAuthenticated = isAuthenticated;
+            this.userId = this.authService.getUserId();
         });
     }
 
@@ -59,8 +62,13 @@ export class PostListComponent implements OnInit, OnDestroy {
     onDelete(id: string | null) {
         // Loader start
         this.isLoading = true;
-        this.postService.deletePost(id).subscribe(() => {
-            this.postService.getPosts(this.postsPerPage, this.currentPage);
+        this.postService.deletePost(id).subscribe({
+            next: () => {
+                this.postService.getPosts(this.postsPerPage, this.currentPage);
+            },
+            error: () => {
+                this.isLoading = false;
+            },
         });
     }
 }

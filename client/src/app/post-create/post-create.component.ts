@@ -1,6 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
 import {ActivatedRoute, ParamMap} from '@angular/router';
+import {Subscription} from 'rxjs';
+import {AuthService} from '../services/auth.service';
 import {Post, PostsService} from '../services/posts.service';
 import {mimeType} from './mime-type.validator';
 
@@ -9,7 +11,7 @@ import {mimeType} from './mime-type.validator';
     templateUrl: './post-create.component.html',
     styleUrls: ['./post-create.component.scss'],
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
     enteredTitle = '';
     enteredContent = '';
     private mode = 'create';
@@ -18,13 +20,18 @@ export class PostCreateComponent implements OnInit {
     isLoading = false;
     form: FormGroup;
     imagePreview: string;
+    private authStatusSub: Subscription;
 
     constructor(
         public postService: PostsService, //
-        public router: ActivatedRoute
+        public router: ActivatedRoute,
+        private authService: AuthService
     ) {}
 
     ngOnInit(): void {
+        this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
+            this.isLoading = false;
+        });
         // FormGroup
         this.form = new FormGroup({
             title: new FormControl(null, {
@@ -52,6 +59,7 @@ export class PostCreateComponent implements OnInit {
                         title: postData.title,
                         content: postData.content,
                         imagePath: postData.imagePath,
+                        creator: postData.creator,
                     };
                     this.form.setValue({
                         'title': this.post.title,
@@ -90,5 +98,9 @@ export class PostCreateComponent implements OnInit {
             this.postService.updatePost(this.postId, this.form.value.title, this.form.value.content, this.form.value.image);
         }
         this.form.reset();
+    }
+
+    ngOnDestroy(): void {
+        this.authStatusSub.unsubscribe();
     }
 }
