@@ -17,10 +17,14 @@ app.use(
 // This will parse incoming JSON
 app.use(express.json());
 
-app.use('/images', express.static(path.join('images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/', express.static(path.join(__dirname, 'angular')));
 
 // Router middleware
 app.use('/api/posts', postRoutes);
 app.use('/api/user', userRoutes);
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, 'angular', 'index.html'));
+});
 
 module.exports = app;
