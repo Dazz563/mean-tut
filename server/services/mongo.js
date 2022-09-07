@@ -9,7 +9,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 async function mongoConnect() {
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(`mongodb+srv://darren-user:${process.env.MONGO_ATLAS_PW}@cluster0.2yyh4.mongodb.net/post-project?retryWrites=true&w=majority`);
 }
 
 module.exports = {
