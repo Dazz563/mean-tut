@@ -2,8 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {AuthService} from '../services/auth.service';
-import {Post, PostsService} from '../services/posts.service';
+import {AuthService} from '../../services/auth.service';
+import {Post, PostsService} from '../../services/posts.service';
 import {mimeType} from './mime-type.validator';
 
 @Component({

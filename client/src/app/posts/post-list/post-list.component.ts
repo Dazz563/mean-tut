@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 import {Subscription} from 'rxjs';
-import {AuthService} from '../services/auth.service';
-import {Post, PostsService} from '../services/posts.service';
+import {AuthService} from '../../services/auth.service';
+import {Post, PostsService} from '../../services/posts.service';
 
 @Component({
     selector: 'app-post-list',
