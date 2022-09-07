@@ -10,7 +10,7 @@ const app = express();
 // Setting cors
 app.use(
     cors({
-        origin: 'http://localhost:4200',
+        origin: '*',
     })
 );
 
